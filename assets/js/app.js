@@ -5,6 +5,8 @@ $(() => {
     form.addEventListener("submit", (e) => {
         e.preventDefault();
         
+        if (/^[0123456789]+/.test(!superInput.value)) return console.log("Ingrese solo números por favor");
+
         $.ajax({
             url: `https://cdn.jsdelivr.net/gh/akabab/superhero-api@0.3.0/api/all.json`,
             type: "GET",
