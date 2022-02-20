@@ -4,59 +4,73 @@ import { form, superInput, result } from "./selectors.js";
 $(() => {
     form.addEventListener("submit", (e) => {
         e.preventDefault();
-        
-        if (/^[0123456789]+/.test(!superInput.value)) return console.log("Ingrese solo números por favor");
+
+        if (!/^\d+$/.test(superInput.value))
+            return console.log("Ingrese solo números por favor");
 
         $.ajax({
-            url: `https://cdn.jsdelivr.net/gh/akabab/superhero-api@0.3.0/api/all.json`,
+            url: `https://www.superheroapi.com/api.php/3525635500807579/${superInput.value}`,
             type: "GET",
             dataType: "JSON",
             success(data) {
-                const inputId = superInput.value;
+                const resultLength = result.childNodes.length - 1
+                
+                for (let i = resultLength; i >= 0; i--) {
+                    result.removeChild(result.childNodes[i]);
+                }
 
-                result.childNodes.forEach(item => result.removeChild(item))
-        
+                if (data.response === "error") return this.error("Invalid ID");
+
+                result.appendFullElement("h1", "SuperHero Encontrado!");
+
                 result.appendCard(
-                    data[inputId].images.lg,
-                    `${data[inputId].id} - ${data[inputId].name}`,
+                    data.image.url,
+                    `${data.id} - ${data.name}`,
                     [
-                        `Nombre completo: ${data[inputId].biography.fullName}`,
-                        `Afiliaciones: ${data[inputId].connections.groupAffiliation}`,
-                        `Publicante ${data[inputId].biography.publisher}`,
+                        `Nombre completo: ${data.biography["full-name"]}`,
+                        `Afiliaciones: ${data.connections["group-affiliation"]}`,
+                        `Publicante: ${data.biography.publisher}`,
                     ],
                     [
-                        `Ocupación: ${data[inputId].work.occupation}`,
-                        `Primera aparición: ${data[inputId].biography.firstAppearance}`,
-                        `Altura: ${data[inputId].appearance.height[0]} / ${data[inputId].appearance.height[1]}`,
-                        `Peso: ${data[inputId].appearance.weight[0]} / ${data[inputId].appearance.weight[1]}`,
-                        `Familiares: ${data[inputId].connections.relatives}`
+                        `Ocupación: ${data.work.occupation}`,
+                        `Primera aparición: ${data.biography["first-appearance"]}`,
+                        `Altura: ${data.appearance.height[0]} / ${data.appearance.height[1]}`,
+                        `Peso: ${data.appearance.weight[0]} / ${data.appearance.weight[1]}`,
+                        `Familiares: ${data.connections.relatives}`,
                     ]
                 );
-        
+
                 const options = {
                     title: {
-                        text: "Estadísticas de poder: "
+                        text: "Estadísticas de poder: ",
                     },
-                    data: [{
-                        type: "pie",
-                        startAngle: 90,
-                        showInLegend: "true",
-                        legendText: "{label}",
-                        indexLabel: "{label} ({y})",
-                        yValueFormatString:"#,##0.#"%"",
+                    data: [
+                        {
+                            type: "pie",
+                            startAngle: 90,
+                            showInLegend: "true",
+                            legendText: "{label}",
+                            indexLabel: "{label} ({y})",
+                            yValueFormatString: "#,##0.#" % "",
 
-                        dataPoints: []
-                    }]
+                            dataPoints: [],
+                        },
+                    ],
                 };
-                Object.keys(data[inputId].powerstats).forEach(item => {
-                    options.data[0].dataPoints.push( { label: item, y: data[inputId].powerstats[item] } )
-                })
+                Object.keys(data.powerstats).forEach((item) => {
+                    options.data[0].dataPoints.push({
+                        label: item,
+                        y: data.powerstats[item],
+                    });
+                });
                 $("#canvas").CanvasJSChart(options);
 
                 superInput.value = "";
             },
             error(err) {
-                console.log(err);
+                result.childNodes.forEach((item) => result.removeChild(item));
+                result.appendFullElement("h1", err);
+                console.error(err);
             },
         });
     });
