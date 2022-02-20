@@ -1,0 +1,51 @@
+* {
+  margin: 0;
+  padding: 0;
+}
+
+:root {
+  min-height: 100vh;
+  height: max-content;
+}
+
+.navbar {
+  padding: 0.5em;
+  background-color: #2d2d2d;
+  height: 7vh;
+  color: #fff;
+}
+.navbar-brand {
+  display: flex;
+  align-items: center;
+}
+.navbar__img {
+  height: 5vh;
+  margin-right: 0.5rem;
+}
+.navbar__title {
+  font-weight: 400;
+}
+
+.main #result, .main {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+}
+
+.main__banner {
+  width: 30%;
+}
+.main__form {
+  margin-top: 2rem;
+}
+.main__form [type=submit] {
+  margin-top: -1rem;
+}
+.main #result {
+  margin-top: 3rem;
+}
+.main #result .card {
+  width: 90%;
+  margin: 0 auto;
+}
